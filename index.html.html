@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
+<title>Estonia WNT · Coaching Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────────── */
+:root{
+  --bg:#0b0f14;--s1:#111820;--s2:#182030;--s3:#1e2a3a;
+  --b1:rgba(255,255,255,.06);--b2:rgba(255,255,255,.1);
+  --t1:#f0f4f8;--t2:#8ca0be;--t3:#4a5a72;
+  --gr:#1fba8a;--grd:rgba(31,186,138,.12);--grb:rgba(31,186,138,.3);
+  --ac:#00c8e8;--acd:rgba(0,200,232,.1);--acb:rgba(0,200,232,.3);
+  --pu:#8b72f0;--pud:rgba(139,114,240,.12);--pub:rgba(139,114,240,.3);
+  --go:#f5a623;--god:rgba(245,166,35,.1);--gob:rgba(245,166,35,.3);
+  --re:#e05555;--red:rgba(224,85,85,.1);--reb:rgba(224,85,85,.3);
+  --am:#f0a030;--amd:rgba(240,160,48,.1);--amb:rgba(240,160,48,.3);
+  --radius:10px;--radius-sm:6px;
+  --font:'Inter',sans-serif;--font-title:'Bebas Neue',cursive;
+  --sidebar:220px;--header:52px;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+}
+.light{
+  --bg:#f0f4f8;--s1:#ffffff;--s2:#f5f7fa;--s3:#ebeff5;
+  --b1:rgba(0,0,0,.06);--b2:rgba(0,0,0,.1);
+  --t1:#1a2030;--t2:#4a5a72;--t3:#8ca0be;
+}
+
+/* ── RESET ──────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-family:var(--font);font-size:14px}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:var(--sidebar);background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;z-index:10;transition:transform .25s}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#topbar{height:var(--header);background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;z-index:5}
+#content{flex:1;overflow-y:auto;padding:20px;background:var(--bg)}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar-brand{padding:16px;border-bottom:1px solid var(--b1)}
+.brand-title{font-family:var(--font-title);font-size:20px;letter-spacing:.5px;color:var(--t1);line-height:1}
+.brand-sub{font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.nav-section{padding:10px 8px 4px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--t3)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-sm);margin:1px 6px;font-size:13px;font-weight:500;color:var(--t2);cursor:pointer;transition:all .15s;user-select:none;border:none;background:none;width:calc(100% - 12px);text-align:left}
+.nav-item:hover{background:var(--s2);color:var(--t1)}
+.nav-item.active{background:var(--pud);color:var(--pu);border:1px solid var(--pub)}
+.nav-item .icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--re);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--b1);display:flex;gap:8px}
+
+/* ── TOPBAR ──────────────────────────────────────────── */
+#menu-btn{background:none;border:none;color:var(--t2);cursor:pointer;padding:6px;border-radius:var(--radius-sm);font-size:18px;display:none}
+.page-title{font-family:var(--font-title);font-size:20px;letter-spacing:.5px;color:var(--t1)}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--t3);transition:background .3s}
+.sync-dot.syncing{background:var(--go);animation:pulse 1s infinite}
+.sync-dot.ok{background:var(--gr)}
+.sync-dot.err{background:var(--re)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── BUTTONS ─────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--t2);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--s3);color:var(--t1)}
+.btn-primary{background:var(--pu);border-color:var(--pu);color:#fff}
+.btn-primary:hover{background:#7a62df;border-color:#7a62df;color:#fff}
+.btn-green{background:var(--gr);border-color:var(--gr);color:#000}
+.btn-green:hover{background:#18a87c;color:#000}
+.btn-ghost{background:none;border-color:transparent}
+.btn-ghost:hover{background:var(--s2)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-lg{padding:11px 20px;font-size:15px}
+.btn-full{width:100%;justify-content:center}
+
+/* ── CARDS ───────────────────────────────────────────── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+
+/* ── GRID ────────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid-auto{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+
+/* ── STAT TILES ─────────────────────────────────────── */
+.stat-tile{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-num{font-family:var(--font-title);font-size:32px;letter-spacing:.5px;line-height:1;margin-bottom:3px}
+.stat-label{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── TAGS ────────────────────────────────────────────── */
+.tag{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;letter-spacing:.3px}
+.tag-gr{background:var(--grd);color:var(--gr);border:1px solid var(--grb)}
+.tag-ac{background:var(--acd);color:var(--ac);border:1px solid var(--acb)}
+.tag-pu{background:var(--pud);color:var(--pu);border:1px solid var(--pub)}
+.tag-go{background:var(--god);color:var(--go);border:1px solid var(--gob)}
+.tag-re{background:var(--red);color:var(--re);border:1px solid var(--reb)}
+.tag-am{background:var(--amd);color:var(--am);border:1px solid var(--amb)}
+.tag-dim{background:var(--s2);color:var(--t3);border:1px solid var(--b1)}
+
+/* ── BADGES ─────────────────────────────────────────── */
+.role-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.4px}
+.role-ar{background:var(--acd);color:var(--ac);border:1px solid var(--acb)}
+.role-bat{background:var(--grd);color:var(--gr);border:1px solid var(--grb)}
+.role-bowl{background:var(--god);color:var(--go);border:1px solid var(--gob)}
+.role-wk{background:var(--pud);color:var(--pu);border:1px solid var(--pub)}
+
+/* ── INPUTS ──────────────────────────────────────────── */
+input,textarea,select{background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:var(--radius-sm);font-family:var(--font);font-size:13px;padding:8px 12px;width:100%;transition:border-color .15s;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--pu);box-shadow:0 0 0 2px var(--pud)}
+label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.field{margin-bottom:12px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+textarea{resize:vertical;min-height:80px;line-height:1.6}
+
+/* ── DIVIDERS ────────────────────────────────────────── */
+.hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
+
+/* ── ALERTS ─────────────────────────────────────────── */
+.alert{padding:10px 14px;border-radius:var(--radius-sm);font-size:12.5px;line-height:1.5;margin-bottom:10px}
+.alert-info{background:var(--acd);border:1px solid var(--acb);color:var(--ac)}
+.alert-warn{background:var(--amd);border:1px solid var(--amb);color:var(--am)}
+.alert-err{background:var(--red);border:1px solid var(--reb);color:var(--re)}
+.alert-ok{background:var(--grd);border:1px solid var(--grb);color:var(--gr)}
+
+/* ── MODAL ───────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--s1);border-radius:14px 14px 0 0;width:100%;max-width:680px;max-height:92vh;display:flex;flex-direction:column;transform:translateY(40px);transition:transform .25s;overflow:hidden}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-drag{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:10px auto 4px}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-bottom:1px solid var(--b1);flex-shrink:0}
+.modal-title{font-family:var(--font-title);font-size:20px;letter-spacing:.5px}
+.modal-body{flex:1;overflow-y:auto;padding:16px 18px}
+.modal-footer{padding:14px 18px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0}
+
+/* ── PLAYER CARDS ────────────────────────────────────── */
+.player-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .15s;position:relative}
+.player-card:hover{border-color:var(--pu);background:var(--s2)}
+.player-card.inactive{opacity:.45;filter:grayscale(.7)}
+.pc-name{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.pc-meta{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.pc-stat{font-size:11px;color:var(--t3)}
+.pc-notes{font-size:11.5px;color:var(--t2);line-height:1.55;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc-flag{font-size:11px;color:var(--re);font-weight:500}
+.pc-highlight{font-size:11px;color:var(--gr);font-weight:500}
+
+/* ── SESSION HISTORY ─────────────────────────────────── */
+.history-item{padding:10px 0;border-bottom:1px solid var(--b1)}
+.history-item:last-child{border-bottom:none}
+.history-date{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.history-title{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:6px}
+.history-note{font-size:12.5px;color:var(--t1);line-height:1.6;background:var(--s2);border-left:2px solid var(--pu);padding:6px 10px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:4px;white-space:pre-wrap}
+.history-pos{font-size:11.5px;color:var(--gr);margin-bottom:2px}
+.history-neg{font-size:11.5px;color:var(--am);margin-bottom:2px}
+
+/* ── SESSIONS TAB ────────────────────────────────────── */
+.session-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);overflow:hidden;margin-bottom:10px}
+.session-head{padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.session-head:hover{background:var(--s2)}
+.session-date{font-family:var(--font-title);font-size:18px;letter-spacing:.3px}
+.session-type{font-size:11px;font-weight:500;color:var(--t3);padding:2px 8px;background:var(--s2);border-radius:3px}
+.session-att{font-size:12px;color:var(--t2);margin-left:auto}
+.session-body{display:none;padding:0 14px 12px}
+.session-body.open{display:block}
+.player-chip{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:3px;margin:2px;background:var(--s2);color:var(--t2);border:1px solid var(--b1)}
+.player-chip.present{background:var(--grd);color:var(--gr);border-color:var(--grb)}
+.player-chip.absent{background:var(--red);color:var(--re);border-color:var(--reb)}
+.player-chip.partial{background:var(--amd);color:var(--am);border-color:var(--amb)}
+
+/* ── TRAINING PLANS ──────────────────────────────────── */
+.plan-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.plan-tab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--b2);color:var(--t2);background:var(--s1);transition:all .15s}
+.plan-tab.active{background:var(--pu);border-color:var(--pu);color:#fff}
+.plan-tab.done{border-color:var(--grb);color:var(--gr)}
+.rundown-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--b1);position:relative}
+.rundown-item:last-child{border-bottom:none}
+.rundown-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.rd-rest{background:var(--t3)}.rd-field{background:var(--am)}.rd-bat{background:var(--ac)}.rd-bowl{background:var(--gr)}.rd-values{background:var(--pu)}
+.rundown-time{font-size:10px;color:var(--t3);min-width:50px;flex-shrink:0;padding-top:1px}
+.rundown-title{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px}
+.rundown-desc{font-size:12px;color:var(--t2);line-height:1.6;white-space:pre-wrap}
+
+/* ── ATTENDANCE ──────────────────────────────────────── */
+.att-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--b1)}
+.att-row:last-child{border-bottom:none}
+.att-name{font-size:13px;font-weight:500;color:var(--t1);width:100px;flex-shrink:0}
+.att-dots{display:flex;gap:3px}
+.att-dot{width:18px;height:18px;border-radius:3px;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.att-y{background:var(--grd);color:var(--gr);border:1px solid var(--grb)}
+.att-n{background:var(--s2);color:var(--t3);border:1px solid var(--b1)}
+.att-h{background:var(--amd);color:var(--am);border:1px solid var(--amb)}
+.att-pct{font-size:12px;font-weight:600;margin-left:auto}
+
+/* ── AGENT / TOOLS ───────────────────────────────────── */
+#tools-layout{display:grid;grid-template-columns:1fr 380px;gap:14px;height:100%}
+.chat-panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);display:flex;flex-direction:column;height:calc(100vh - 120px);overflow:hidden}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{max-width:90%;padding:10px 13px;border-radius:var(--radius-sm);line-height:1.6;font-size:13px}
+.chat-msg.user{background:var(--pud);border:1px solid var(--pub);color:var(--t1);align-self:flex-end;border-radius:var(--radius-sm) var(--radius-sm) 2px var(--radius-sm)}
+.chat-msg.claude{background:var(--s2);border:1px solid var(--b1);color:var(--t1);align-self:flex-start;border-radius:2px var(--radius-sm) var(--radius-sm) var(--radius-sm)}
+.chat-msg.system{background:var(--grd);border:1px solid var(--grb);color:var(--gr);font-size:12px;align-self:center;text-align:center}
+.chat-msg.error{background:var(--red);border:1px solid var(--reb);color:var(--re);font-size:12px;align-self:center;text-align:center}
+.chat-msg.thinking{background:var(--s2);border:1px solid var(--b1);color:var(--t3);font-size:12px;align-self:flex-start;animation:pulse 1.5s infinite}
+.chat-input-area{padding:12px;border-top:1px solid var(--b1);display:flex;flex-direction:column;gap:8px;flex-shrink:0}
+.chat-input-row{display:flex;gap:8px}
+.chat-input{flex:1;resize:none;min-height:60px;max-height:160px;background:var(--s2);border:1px solid var(--b2);color:var(--t1);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;font-family:var(--font);line-height:1.5}
+.chat-input:focus{border-color:var(--pu);outline:none}
+.chat-actions{display:flex;gap:6px;flex-wrap:wrap}
+.chat-chip{font-size:11px;padding:3px 9px;border-radius:20px;cursor:pointer;background:var(--s2);border:1px solid var(--b2);color:var(--t2);transition:all .15s}
+.chat-chip:hover{background:var(--pud);border-color:var(--pub);color:var(--pu)}
+.preview-panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);display:flex;flex-direction:column;height:calc(100vh - 120px);overflow:hidden}
+.preview-header{padding:12px 14px;border-bottom:1px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.preview-body{flex:1;overflow-y:auto;padding:14px}
+.preview-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px;color:var(--t3);text-align:center}
+.preview-empty .icon{font-size:40px;opacity:.4}
+.diff-section{margin-bottom:14px}
+.diff-section h4{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.diff-item{padding:8px 10px;border-radius:var(--radius-sm);margin-bottom:5px;font-size:12.5px}
+.diff-item.add{background:var(--grd);border:1px solid var(--grb)}
+.diff-item.update{background:var(--acd);border:1px solid var(--acb)}
+.diff-item.warn{background:var(--amd);border:1px solid var(--amb)}
+.diff-item-name{font-weight:600;color:var(--t1);margin-bottom:3px}
+.diff-item-detail{color:var(--t2);line-height:1.5}
+.preview-footer{padding:12px 14px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0}
+
+/* ── FITNESS ─────────────────────────────────────────── */
+.fitness-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b1)}
+.fitness-row:last-child{border-bottom:none}
+.fitness-rank{font-family:var(--font-title);font-size:18px;color:var(--t3);width:24px;text-align:center;flex-shrink:0}
+.fitness-name{font-size:13px;font-weight:500;color:var(--t1);width:90px;flex-shrink:0}
+.fitness-bar-wrap{flex:1;height:6px;background:var(--s2);border-radius:3px;overflow:hidden}
+.fitness-bar{height:100%;background:var(--gr);border-radius:3px;transition:width .6s}
+.fitness-time{font-size:13px;font-weight:600;color:var(--gr);width:50px;text-align:right;flex-shrink:0}
+.fitness-trend{font-size:13px;width:20px;text-align:center;flex-shrink:0}
+
+/* ── VALUES ─────────────────────────────────────────── */
+.value-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.value-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer}
+.value-icon{font-size:22px}
+.value-title{font-size:16px;font-weight:600;color:var(--t1)}
+.value-item{font-size:13px;color:var(--t2);padding:5px 0;border-bottom:1px solid var(--b1);line-height:1.5}
+.value-item:last-child{border-bottom:none}
+.value-item::before{content:'—';color:var(--t3);margin-right:8px}
+
+/* ── HOME WIDGETS ────────────────────────────────────── */
+.next-session-card{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid var(--pub);border-radius:var(--radius);padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.nsc-label{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--pu);margin-bottom:4px}
+.nsc-title{font-family:var(--font-title);font-size:24px;letter-spacing:.5px;color:var(--t1);margin-bottom:3px}
+.nsc-sub{font-size:13px;color:var(--t2)}
+.quick-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.qa-btn{background:var(--s1);border:1px solid var(--b1);border-radius:var(--radius);padding:14px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.qa-btn:hover{border-color:var(--pu);background:var(--s2)}
+.qa-icon{font-size:24px}
+.qa-label{font-size:12px;font-weight:500;color:var(--t2)}
+
+/* ── SCROLLBAR ───────────────────────────────────────── */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+
+/* ── MOBILE ──────────────────────────────────────────── */
+@media(max-width:768px){
+  #sidebar{position:fixed;top:0;left:0;height:100%;transform:translateX(-100%);z-index:50}
+  #sidebar.open{transform:translateX(0)}
+  #menu-btn{display:block}
+  #overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:49;display:none}
+  #overlay.show{display:block}
+  #content{padding:12px}
+  #tools-layout{grid-template-columns:1fr;height:auto}
+  .chat-panel,.preview-panel{height:60vh}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .field-row{grid-template-columns:1fr}
+  .modal-sheet{max-height:96vh}
+}
+
+/* ── ANIMATIONS ──────────────────────────────────────── */
+.fade-in{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SETTINGS PANEL ──────────────────────────────────── */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:13px;font-weight:500;color:var(--t1)}
+.settings-desc{font-size:11px;color:var(--t3);margin-top:2px}
+.toggle{width:40px;height:22px;background:var(--s2);border:1px solid var(--b2);border-radius:11px;cursor:pointer;position:relative;transition:background .2s}
+.toggle.on{background:var(--pu);border-color:var(--pu)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:left .2s}
+.toggle.on::after{left:20px}
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-title">WNT Hub</div>
+      <div class="brand-sub">Estonia · Season 2026</div>
+    </div>
+    <div class="nav-section">Overview</div>
+    <button class="nav-item active" onclick="nav('home')"><span class="icon">🏠</span>Home</button>
+    <button class="nav-item" onclick="nav('squad')"><span class="icon">👥</span>Squad</button>
+    <div class="nav-section">Training</div>
+    <button class="nav-item" onclick="nav('sessions')"><span class="icon">📋</span>Sessions</button>
+    <button class="nav-item" onclick="nav('plans')"><span class="icon">⚑</span>Plans</button>
+    <button class="nav-item" onclick="nav('attendance')"><span class="icon">📊</span>Attendance</button>
+    <button class="nav-item" onclick="nav('fitness')"><span class="icon">🏃</span>Fitness</button>
+    <div class="nav-section">Team</div>
+    <button class="nav-item" onclick="nav('values')"><span class="icon">❤️</span>Values</button>
+    <button class="nav-item" onclick="nav('tools')"><span class="icon">💬</span>Coach AI</button>
+    <div class="sidebar-footer">
+      <button class="btn btn-sm btn-ghost" onclick="toggleTheme()" title="Toggle theme">🌓</button>
+      <button class="btn btn-sm btn-ghost" onclick="nav('settings')" title="Settings">⚙</button>
+      <button class="btn btn-sm btn-ghost" onclick="forceSync()" title="Sync" id="sync-btn">↻</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <button id="menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="page-title" id="page-title">Home</div>
+      <div class="topbar-actions">
+        <div class="sync-indicator">
+          <div class="sync-dot" id="sync-dot"></div>
+          <span id="sync-label" style="display:none"></span>
+        </div>
+        <button class="btn btn-sm" id="edit-btn" onclick="toggleEdit()">✏ Edit</button>
+      </div>
+    </div>
+    <div id="content"></div>
+  </div>
+
+  <!-- OVERLAY -->
+  <div id="overlay" onclick="toggleSidebar()"></div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-player">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modal-player-name">Player</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-player')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-player-body"></div>
+    <div class="modal-footer" id="modal-player-footer"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-settings">
+  <div class="modal-sheet">
+    <div class="modal-drag"></div>
+    <div class="modal-header">
+      <div class="modal-title">Settings</div>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-settings')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-settings-body"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ───────────────────────────────────────────────
+const API_KEY = '$2a$10$dbOP4TWq21eqnqAovtQCa.vh5fzzlSM4Z9pZPWPUy65MS8fA8Wnq2';
+const BIN_ID  = '6a05a125adc21f119a9b6742';
+const JSONBIN = 'https://api.jsonbin.io/v3/b';
+
+// ── SEED DATA ────────────────────────────────────────────
+const SEED = {
+  meta:{ season:'2026', morale:'Mixed' },
+  players:[
+    {id:'p1',name:'Annemari',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: needs better base to throw from — stronger legs, more upper body rotation on release. Catches too front-on, need give on either side.\nBatting: going uppish to leg side, missing straight balls pitched up. Tighten forward defence frame. Full drives excellent.\nBowling: falls away as session progresses — engage core on release to maintain accuracy.',
+        highlights:['Full-length drives — perfect technique','Squad fielding leader'],
+        concerns:['Falling away on bowling release','Catches front-on — no give on sides']}
+     ],
+     bat:{notes:'Moves feet well, picks up gaps instinctively. Working on compacting drive — tendency to lift head and drop shoulder. Tighten forward defence frame. Uppish to leg when ball is full and straight.',tags:['Compact drive','Head still','Gap awareness','Tighten forward defence']},
+     bowl:{notes:'Falls away as session progresses — must engage core on release and stay tall. Pace building month on month.',tags:['Core on release','Stay tall','Pace building']},
+     field:{notes:'Squad fielding leader. Most confident attacking the ball. Catches front-on — needs give on either side, not just straight ahead.',highlight:'Squad fielding leader'},
+     fitness:{best:'9:51',bestSec:591,runs:9,trend:'↑'}},
+    {id:'p2',name:'Maret',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: great arm — steadying well before throwing. Soft hands approach needs work, short low catching next time.\nBatting: finds middle much better when focusing on feet and head placement. Need to establish batting plan — tick boxes, build innings. Full drives excellent.\nBowling: much improved, good momentum through crease. Head positioning better. Knee issue with hitting crease hard — mitigate with upper body positioning.',
+        highlights:['Bowling much improved — momentum through crease','Named winning mentality as team strength in team talk'],
+        concerns:['Soft hands on catching — still needs work','Knee load on crease — monitor']}
+     ],
+     bat:{notes:'Finds the middle when focusing on feet and head placement. Need to establish batting plan: tick boxes, build innings. Full drives excellent.',tags:['Tick-box batting','Build innings','Head placement']},
+     bowl:{notes:'Good momentum through crease. Head positioning improved. Knee issue hitting crease hard — mitigate with upper body positions first.',tags:['Crease momentum','Head up','Knee — monitor']},
+     field:{notes:'Great arm when steadying before throwing. Soft hands on catching still needs work — short low catches next focus.'},
+     fitness:{best:'15:09',bestSec:909,runs:4,trend:'?'}},
+    {id:'p3',name:'Natalia',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: good efforts but struggles to move and change direction. Hands need significant work. Focus on preparation: walking in with bowler, set and attack as batter hits.\nBatting: gets tired quickly — pads coming off ongoing issue. Plays with locked/tight form, unable to flow momentum. Focus: foot movement with deliberate movement at start of innings.\nKeeping: doesn\'t get on knees — possible knee issue to investigate. Core not doing enough work. Main focus: stay low then soft hands.',
+        highlights:['Responsive and applies feedback quickly'],
+        concerns:['Pads coming off — not prepared to bat','Keeper: knee issue to investigate','Struggles to change direction in field']}
+     ],
+     bat:{notes:'Gets tired quickly, pads coming off is ongoing issue. Plays with locked/tight form — unable to flow momentum into shot. Focus: exaggerated foot movement, deliberate start to innings.',tags:['Exaggerated foot movement','Loosen form','Pads ready']},
+     bowl:{notes:'Consistent when feedback is implemented. Tends to apply coaching quickly — positive trait.',tags:['Responsive to coaching']},
+     field:{notes:'Good efforts but struggles to move and change direction. Preparation to field: walk in with bowler, set and attack.'},
+     fitness:{best:null,runs:0,trend:'?'}},
+    {id:'p4',name:'Aryaa',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],
+     bat:{notes:'Low confidence on front foot — feels a full ball is danger when it\'s opportunity. Very strong cross-bat but loose feet. Needs repetition, not pressure. Work on front foot confidence.',tags:['Front foot confidence','Exaggerate foot movement','Repetition not pressure']},
+     bowl:{notes:'Bowled well — don\'t change too much. Watch for bowling off wrong foot under fatigue.',tags:['Good seam position','Watch wrong-foot under fatigue'],highlight:'Good swing technique + seam position'},
+     field:{notes:'Self-doubt noted — positive reinforcement critical. Improving in catching drills.'},
+     fitness:{best:'14:20',bestSec:860,runs:1,trend:'?'}},
+    {id:'p5',name:'Sirli',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],
+     bat:{notes:'Great feet. Over-hitting — focus on middling and timing before power.',tags:['Middle the ball','Find timing first','No big swings']},
+     bowl:{notes:'Getting through final action too quickly — break into 3 checkpoints.',tags:['3 checkpoints','Slow final action','Full follow-through']},
+     field:{notes:'No recent fielding notes.'},
+     fitness:{best:'19:05',bestSec:1145,runs:2,trend:'?',flag:'Fitness gap — significant'}},
+    {id:'p6',name:'Helena',role:'wk',roleLabel:'Keeper',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: hard hands — as wicketkeeper this is primary focus for the season. More ground fielding and catching required.\nBatting: really strong off back foot, goes back and across well. Front foot confidence is next step.\nKeeping: made great strides — stays low well, no problem taking the ball. Hard hands still need work. Good energy.',
+        highlights:['Excellent back-foot batting — goes back and across really well','Great strides keeping — stays low well'],
+        concerns:['Hardest hands in team — soft collection primary focus all season','Front foot batting needs development']}
+     ],
+     bat:{notes:'Really strong off back foot. Front foot confidence is the development goal — work toward working ball for singles off front foot.',tags:['Strong back foot','Front foot confidence next','Singles focus']},
+     bowl:{notes:'Keeper. Bowling not applicable.'},
+     field:{notes:'Hard hands — as wicketkeeper this is primary technical focus for the season. More ground fielding and catching to build confidence.',flag:'Hard hands — keeper focus for 2026'},
+     fitness:{best:'12:30',bestSec:750,runs:21,trend:'↑',highlight:'Highest volume runner'}},
+    {id:'p7',name:'Egelin',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],
+     bat:{notes:'Determined, good front foot positions. Back foot work still developing. Possible bat too heavy — consider new grip.',tags:['Front foot good','Back foot developing','Check bat weight']},
+     bowl:{notes:'Placing ball instead of slinging. Follow-through must finish the action. Fastest improving bowler.',tags:['Follow-through','Sling not place'],highlight:'Fastest improving bowler'},
+     field:{notes:'Biggest fielding improvement in squad. Crocodile hands gone.',highlight:'Biggest fielding improvement'},
+     fitness:{best:'12:12',bestSec:732,runs:14,trend:'↑'}},
+    {id:'p8',name:'Geethma',role:'bat',roleLabel:'Batter',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: great hands — catches really well, understands soft hands concept. Transfer to ground fielding needed more.\nBatting: falling away to offside when trying to work to leg — front pad getting in way. Work on leg glance basics. Can be too early on timing — natural play is just to hit the ball. LBW risk defending straight ball on back foot.\nBowling: needs dedicated 1-on-1 spin work.',
+        highlights:['Best catching hands in squad — soft hands concept fully understood'],
+        concerns:['Leg glance technique — front pad getting in way','LBW risk on straight ball back foot','Spin 1-on-1 needed']}
+     ],
+     bat:{notes:'Good feet. Work on timing — can be too early. Head over ball. Leg glance needs work — front pad getting in way. LBW risk defending straight ball on back foot.',tags:['Timing','Leg glance work','LBW awareness','Trust natural play']},
+     bowl:{notes:'Needs dedicated 1-on-1 spin session. Better accuracy with shorter run-up.',tags:['Spin 1-on-1 needed','Shorter run-up']},
+     field:{notes:'Best catching hands in squad. Understands soft hands concept instinctively. Ground fielding needs to match.',highlight:'Best catching hands in squad'},
+     fitness:{best:'14:54',bestSec:894,runs:12,trend:'→'}},
+    {id:'p9',name:'Chamali',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[
+       {date:'17 May 2026',type:'session',
+        notes:'Fielding: needs 1-on-1 on catching form, especially above-waist catches — waiting for ball to arrive not grabbing.\nBatting: really good timing on full drives, but needs work on shifting weight on knee and getting low. Personalised resistance training goal for knee strength.',
+        highlights:['Excellent timing on full-length drives'],
+        concerns:['Above-waist catching — grabbing not waiting','Knee shift when getting low — resistance training goal']}
+     ],
+     bat:{notes:'Good timing on drives. Needs work on knee shift and getting low. Personalised resistance training goal for knee strength.',tags:['Good timing','Knee — resistance goal','Weight shift']},
+     bowl:{notes:'Most reliable line and length. Consistently hitting top of off stump.',tags:['Top of off stump','Reliable line and length']},
+     field:{notes:'Needs 1-on-1 on catching form — especially above-waist. Wait for ball rather than grabbing.'},
+     fitness:{best:'11:21',bestSec:681,runs:8,trend:'↑'}},
+    {id:'p10',name:'Asya',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],
+     bat:{notes:'New setup needed. Build front foot confidence and solid foundation.',tags:['New setup','Front foot foundation']},
+     bowl:{notes:'Walk-bowl focus. Side-on action and follow through. Elite wrist and seam position.',tags:['Walk-bowl','Side-on action'],highlight:'⭐ Elite wrists, fingers and seam position'},
+     field:{notes:'Best arm in squad when healthy.'},
+     fitness:{best:'13:17',bestSec:797,runs:3,trend:'?'}},
+    {id:'p11',name:'Egle-liisa',role:'ar',roleLabel:'All-rounder',status:'inactive',statusNote:'Left the squad — May 2026',
+     history:[],
+     bat:{notes:''},bowl:{notes:''},field:{notes:''},fitness:{}},
+    {id:'p12',name:'Liina',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],bat:{notes:''},bowl:{notes:''},field:{notes:''},fitness:{}},
+    {id:'p13',name:'Laima',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],bat:{notes:''},bowl:{notes:''},field:{notes:''},fitness:{}},
+    {id:'p14',name:'Pranjali',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],bat:{notes:''},bowl:{notes:''},field:{notes:''},fitness:{}},
+    {id:'p15',name:'Shifa',role:'ar',roleLabel:'All-rounder',status:'active',
+     history:[],bat:{notes:''},bowl:{notes:''},field:{notes:''},fitness:{}}
+  ],
+  sessions:[
+    {id:'s1',date:'28 Feb 2026',type:'Indoor Training',attendance:8,present:['Maret','Natalia','Sirli','Asya','Chamali','Helena','Aryaa','Egelin'],partial:[],absent:['Annemari','Geethma','Egle-liisa'],morale:'Good',overview:'Running between wickets, fielding drills, throwing technique.',highlights:['Asya — best arm in squad, consistent target hitting','Chamali — accurate and consistent throws'],concerns:['Attendance commitment to home fitness sessions']},
+    {id:'s2',date:'14 Mar 2026',type:'Indoor Training',attendance:7,present:['Maret','Natalia','Aryaa','Egelin','Geethma','Annemari'],partial:['Helena'],absent:['Sirli','Chamali','Asya','Egle-liisa'],morale:'Mixed',overview:'Running between wickets, bowling skill work.',highlights:['Annemari — strong session, set the tone'],concerns:['Helena left after 1 hour']},
+    {id:'s3',date:'28 Mar 2026',type:'Indoor Training',attendance:4,present:['Egle-liisa','Geethma','Chamali','Annemari'],partial:[],absent:['Maret','Natalia','Sirli','Asya','Helena','Aryaa','Egelin'],morale:'Mixed',overview:'Small group session.',highlights:[],concerns:['Very low turnout — 4 players only']},
+    {id:'s4',date:'11 Apr 2026',type:'Outdoor Training',attendance:4,present:['Natalia','Geethma','Annemari','Helena'],partial:[],absent:['Maret','Sirli','Asya','Chamali','Aryaa','Egelin','Egle-liisa'],morale:'Good',overview:'First outdoor session 2026.',highlights:[],concerns:[]},
+    {id:'s5',date:'25 Apr 2026',type:'Outdoor Training',attendance:3,present:['Annemari','Egelin','Maret'],partial:[],absent:['Natalia','Sirli','Asya','Chamali','Helena','Aryaa','Egle-liisa','Geethma'],morale:'Mixed',overview:'Technique over speed theme.',highlights:['Egelin — best session yet, footwork clicking'],concerns:['Very low attendance']},
+    {id:'s6',date:'12 May 2026',type:'Outdoor Training',attendance:8,present:['Annemari','Maret','Natalia','Sirli','Helena','Geethma','Chamali','Egelin'],partial:[],absent:['Asya','Aryaa','Egle-liisa','Liina','Laima','Pranjali','Shifa'],morale:'Good',overview:'Mental preparation focus.',highlights:[],concerns:[]},
+    {id:'s7',date:'17 May 2026',type:'Outdoor Training',attendance:7,present:['Annemari','Maret','Natalia','Aryaa','Geethma','Helena','Chamali'],partial:[],absent:['Sirli','Egelin','Asya','Pranjali','Egle-liisa','Laima','Shifa','Liina'],morale:'Good',overview:'Soft hands, hard work. Fielding: zig-zag catching, pick-up circle. Batting: 3 nets, 5 stations. Bowling: 4-block fast bowlers, keeper rotations. Team talk: season lock-in.',highlights:['Maret — bowling improved, good momentum through crease','Geethma — best catching hands, soft hands concept understood','Helena — great strides keeping, stays low well'],concerns:['Helena — hard hands, primary focus for season','Natalia — movement and direction change, keeper position','Annemari — falling away on bowling release']}
+  ],
+  trainingPlans:[
+    {id:'tp1',date:'17 May 2026',status:'done',title:'Sat 17 May — Soft hands, hard work',subtitle:'Completed · 7 players',color:'var(--gr)',
+     rundown:[
+       {t:'1:00–1:15',type:'rest',title:'Arm warm-up',desc:'Progressive pair throwing 5–20m. Wrist snap, soft hands.'},
+       {t:'1:15–1:40',type:'field',title:'Catching — zig-zag reflex + distance',desc:'Zig-zag cone catch: sprint cones, coach throws at any moment. Soft hands.\nDistance catching: move early, settle late. Calling variation.'},
+       {t:'1:40–2:00',type:'field',title:'Ground fielding — pick-up circle',desc:'All 7 in circle, 4–5m apart. Ground rolls, fingers down, backer-up mandatory.'},
+       {t:'2:00–2:30',type:'bat',title:'Three nets — 5 pairs + 1 solo',desc:'Net 1 Pair A: Back foot pull/hook. Net 1 Pair B: Back foot outside off.\nNet 2: Front foot drive/block. Net 3 solo (Itisam): Singles + twos.'},
+       {t:'2:30–3:00',type:'bowl',title:'Bowling — 4 blocks + keeper rotations',desc:'Fast bowlers 4 blocks: hit length, yorker, offside field, onside field.\nSlow bowlers + Itisam shadow. Keepers rotate 7.5 min each.'},
+       {t:'3:00–3:30',type:'values',title:'Team talk — season lock-in',desc:'Non-negotiables. Positive reinforcement culture. Season commitments.'}
+     ],
+     playerNotes:[
+       {name:'Maret',note:'Head up through crease. Tick-box batting. Soft hands developing.'},
+       {name:'Annemari',note:'Core on release bowling. Give on catching — not front-on.'},
+       {name:'Natalia',note:'Foot movement batting. Keeper: get low. Pads ready.'},
+       {name:'Geethma',note:'Leg glance basics. Spin 1-on-1. Transfer soft hands to ground fielding.'},
+       {name:'Helena',note:'Soft hands — primary focus. Front foot confidence. Keeper drills.'},
+       {name:'Chamali',note:'Above-waist catching: wait for ball. Knee resistance training goal.'},
+       {name:'Aryaa',note:'Carry forward previous priorities.'}
+     ]},
+    {id:'tp2',date:'24 May 2026',status:'planned',title:'Sun 24 May — Move your feet, make runs',subtitle:'Led by Zahaan · 1:00–3:00pm',color:'var(--ac)',
+     rundown:[
+       {t:'1:00–1:05',type:'values',title:'Mental prep circle',desc:'3 questions: What do we want to work on? What did we learn last time? Am I switched on?\nIntroduce theme: moving first, thinking second.'},
+       {t:'1:05–1:20',type:'rest',title:'Warm-up — player led',desc:'Players lead. Zahaan observes energy levels.'},
+       {t:'1:20–1:50',type:'field',title:'Fielding — fingers up + ground fielding',desc:'Drill 1 (1:20–1:33): High ball — get under early, fingers up, wait for it. Progress: start wide, move to position first.\nDrill 2 (1:33–1:50): Ground fielding circle — attack, fingers down, backer-up.'},
+       {t:'1:50–2:40',type:'bat',title:'Net session — tick-box batting',desc:'One net. Two batters. Everyone else bowls. Rotate every 4–6 balls.\nFour priorities in order: 1. Feet moving (exaggerate), 2. Find the middle, 3. Singles and gaps, 4. Cash in.\nZahaan sets field per batter. All bowlers bowl to same field.'},
+       {t:'2:40–2:55',type:'bowl',title:'Keeper 1-on-1 (if numbers permit)',desc:'Helena + Nat only if 3+ bowlers remain in net. Stay low, soft hands, head still.'},
+       {t:'2:55–3:00',type:'values',title:'Close — goals circle',desc:'Each player names personal season goal. Zahaan writes and sends to Ben.\nOne specific positive per player to close.'}
+     ],
+     playerNotes:[
+       {name:'Maret',note:'Tick-box batting. Say the 4 priorities before entering net.'},
+       {name:'Annemari',note:'Core on release. Give on catching — not front-on.'},
+       {name:'Natalia',note:'Exaggerated foot movement every ball. Pads on before session.'},
+       {name:'Geethma',note:'Trust natural play. Leg glance focus.'},
+       {name:'Helena',note:'Soft hands. Keeper 1-on-1 if numbers allow.'},
+       {name:'Chamali',note:'Watch the ball, no overhitting. Above-waist catching: wait.'},
+       {name:'Aryaa',note:'Front foot confidence. Exaggerate foot movement.'}
+     ]}
+  ],
+  events:[
+    {id:'e1',day:24,month:'May',year:2026,title:'Training — Zahaan leads',sub:'1:00–3:00pm',type:'tr'},
+    {id:'e2',day:31,month:'May',year:2026,title:'Match day',sub:'No training',type:'ga'},
+    {id:'e3',day:3,month:'Jun',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e4',day:10,month:'Jun',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e5',day:14,month:'Jun',year:2026,title:'WNT 1-on-1s (TBC)',sub:'All day',type:'ev'},
+    {id:'e6',day:17,month:'Jun',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e7',day:24,month:'Jun',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e8',day:28,month:'Jun',year:2026,title:'Match day',sub:'No training',type:'ga'},
+    {id:'e9',day:1,month:'Jul',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e10',day:8,month:'Jul',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e11',day:13,month:'Jul',year:2026,title:'Training',sub:'1:00pm · Sun',type:'tr'},
+    {id:'e12',day:19,month:'Jul',year:2026,title:'Match day',sub:'No training',type:'ga'},
+    {id:'e13',day:22,month:'Jul',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e14',day:26,month:'Aug',year:2026,title:'Training',sub:'6:00pm · Tue',type:'tr'},
+    {id:'e15',day:30,month:'Aug',year:2026,title:'Match day',sub:'No training',type:'ga'}
+  ],
+  fitness:[
+    {name:'Annemari',best:'9:51',bestSec:591,runs:9,trend:'↑'},
+    {name:'Chamali',best:'11:21',bestSec:681,runs:8,trend:'↑'},
+    {name:'Egelin',best:'12:12',bestSec:732,runs:14,trend:'↑'},
+    {name:'Helena',best:'12:30',bestSec:750,runs:21,trend:'↑'},
+    {name:'Asya',best:'13:17',bestSec:797,runs:3,trend:'?'},
+    {name:'Aryaa',best:'14:20',bestSec:860,runs:1,trend:'?'},
+    {name:'Geethma',best:'14:54',bestSec:894,runs:12,trend:'→'},
+    {name:'Maret',best:'15:09',bestSec:909,runs:4,trend:'?'},
+    {name:'Sirli',best:'19:05',bestSec:1145,runs:2,trend:'?'}
+  ],
+  attendance:[
+    {name:'Annemari',att:['n','y','y','y','y','y','y']},
+    {name:'Maret',att:['y','y','n','n','y','y','y']},
+    {name:'Natalia',att:['y','y','n','y','n','y','y']},
+    {name:'Aryaa',att:['y','y','n','n','n','n','y']},
+    {name:'Sirli',att:['y','n','n','n','n','y','n']},
+    {name:'Helena',att:['y','h','n','y','n','y','y']},
+    {name:'Egelin',att:['y','y','n','n','y','y','n']},
+    {name:'Geethma',att:['n','y','y','y','n','y','y']},
+    {name:'Chamali',att:['y','n','y','n','n','y','y']},
+    {name:'Asya',att:['y','n','n','n','n','n','n']},
+    {name:'Egle-liisa',att:['n','n','y','n','n','n','n']},
+    {name:'Liina',att:['n','n','n','n','n','n','n']},
+    {name:'Laima',att:['n','n','n','n','n','n','n']},
+    {name:'Pranjali',att:['n','n','n','n','n','n','n']},
+    {name:'Shifa',att:['n','n','n','n','n','n','n']}
+  ]
+};
+
+const SESSION_LABELS = ['28 Feb','14 Mar','28 Mar','11 Apr','25 Apr','12 May','17 May'];
+
+const VALUES_DATA = [
+  {icon:'🤝',title:'Respect',items:['Show gratitude and appreciation to teammates, coaches, staff, and officials','Play hard but fair — respect opponents, umpires, and the game','Trust and value input from teammates and coaches','Communicate with care and respect']},
+  {icon:'🔥',title:'Team Spirit',items:['Cheer, support, and celebrate teammates on and off the field','Engage with the whole squad — no cliques','Keep positivity strong and have each other\'s back','Team first — selfless, united, never give up']},
+  {icon:'💪',title:'Commitment',items:['Show up and give 100% effort every time','Be consistent and seek to grow','On the field — will to win, back your team','Own your role and be accountable']},
+  {icon:'🏋️',title:'Hard Work',items:['Give your best consistently — even when it\'s hard','Train with purpose — no shortcuts','Aim for progress, not perfection','Be mentally present and prepared']},
+  {icon:'⚖️',title:'Honesty & Fairness',items:['Be open and truthful — with yourself, teammates and coaches','Take feedback with an open mind','Fair opportunities based on skill and performance','If unclear, ask — don\'t assume']},
+  {icon:'❤️',title:'Care & Support',items:['Understand how teammates like to be supported','Look out for teammates on the field','Check in and lift teammates when they\'re low']},
+  {icon:'⭐',title:'Motivation',items:['Improve daily, learn, and grow','Play with belief, joy, and purpose','Celebrate others\' success','Draw strength from teammates and confidence']}
+];
+
+// ── STATE ────────────────────────────────────────────────
+let DB = null;
+let currentPage = 'home';
+let editMode = false;
+let isLight = localStorage.getItem('theme') === 'light';
+let anthropicKey = localStorage.getItem('anthropic_key') || '';
+let chatHistory = [];
+let pendingPatch = null;
+
+// ── INIT ─────────────────────────────────────────────────
+async function init(){
+  if(isLight) document.documentElement.classList.add('light');
+  const cached = localStorage.getItem('wnt_v6_cache');
+  if(cached){ try{ DB=JSON.parse(cached); renderPage(); }catch(e){ DB=JSON.parse(JSON.stringify(SEED)); } }
+  else{ DB=JSON.parse(JSON.stringify(SEED)); renderPage(); }
+  setSyncStatus('syncing');
+  const fresh = await readBin();
+  if(fresh){ DB=fresh; localStorage.setItem('wnt_v6_cache',JSON.stringify(DB)); renderPage(); setSyncStatus('ok'); }
+  else setSyncStatus('err');
+}
+
+// ── JSONBIN ──────────────────────────────────────────────
+async function readBin(){
+  try{
+    const r=await fetch(`${JSONBIN}/${BIN_ID}/latest`,{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'},cache:'no-store'});
+    if(!r.ok) return null;
+    const d=await r.json();
+    return d && d.players ? d : null;
+  }catch(e){ return null; }
+}
+async function writeBin(data){
+  try{
+    const r=await fetch(`${JSONBIN}/${BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},body:JSON.stringify(data)});
+    return r.ok;
+  }catch(e){ return false; }
+}
+async function forceSync(){
+  const btn=document.getElementById('sync-btn');
+  if(btn) btn.classList.add('spin');
+  setSyncStatus('syncing');
+  const fresh=await readBin();
+  if(fresh){ DB=fresh; localStorage.setItem('wnt_v6_cache',JSON.stringify(DB)); renderPage(); setSyncStatus('ok'); }
+  else setSyncStatus('err');
+  if(btn) btn.classList.remove('spin');
+}
+function setSyncStatus(s){
+  const dot=document.getElementById('sync-dot');
+  if(!dot) return;
+  dot.className='sync-dot';
+  if(s==='syncing') dot.classList.add('syncing');
+  else if(s==='ok') dot.classList.add('ok');
+  else if(s==='err') dot.classList.add('err');
+}
+
+// ── NAVIGATION ───────────────────────────────────────────
+const PAGE_TITLES = {home:'Home',squad:'Squad',sessions:'Sessions',plans:'Training Plans',attendance:'Attendance',fitness:'Fitness',values:'Values',tools:'Coach AI',settings:'Settings'};
+function nav(page){
+  currentPage=page;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>{ if(el.textContent.trim().toLowerCase().replace(' ','').includes(page.replace('tools','coachai').replace('plans','plans'))) el.classList.add('active'); });
+  document.getElementById('page-title').textContent = PAGE_TITLES[page]||page;
+  renderPage();
+  if(window.innerWidth<=768){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function toggleEdit(){
+  editMode=!editMode;
+  const btn=document.getElementById('edit-btn');
+  btn.textContent=editMode?'✓ Done':'✏ Edit';
+  btn.className=editMode?'btn btn-sm btn-primary':'btn btn-sm';
+  renderPage();
+}
+function toggleTheme(){
+  isLight=!isLight;
+  document.documentElement.classList.toggle('light',isLight);
+  localStorage.setItem('theme',isLight?'light':'dark');
+}
+
+// ── RENDER ROUTER ────────────────────────────────────────
+function renderPage(){
+  if(!DB) return;
+  const el=document.getElementById('content');
+  el.innerHTML='';
+  el.classList.add('fade-in');
+  setTimeout(()=>el.classList.remove('fade-in'),300);
+  switch(currentPage){
+    case 'home':      renderHome(); break;
+    case 'squad':     renderSquad(); break;
+    case 'sessions':  renderSessions(); break;
+    case 'plans':     renderPlans(); break;
+    case 'attendance':renderAttendance(); break;
+    case 'fitness':   renderFitness(); break;
+    case 'values':    renderValues(); break;
+    case 'tools':     renderTools(); break;
+    case 'settings':  renderSettings(); break;
+  }
+}
+
+// ── HOME ─────────────────────────────────────────────────
+function renderHome(){
+  const sessions=DB.sessions||[];
+  const players=(DB.players||[]).filter(p=>p.status!=='inactive');
+  const active=players.length;
+  const lastSess=sessions[sessions.length-1];
+  const nextPlan=(DB.trainingPlans||[]).find(p=>p.status==='planned'||p.status==='next');
+
+  let html=``;
+  if(nextPlan){
+    html+=`<div class="next-session-card">
+      <div class="nsc-label">Next session</div>
+      <div class="nsc-title">${nextPlan.title}</div>
+      <div class="nsc-sub">${nextPlan.subtitle||nextPlan.date}</div>
+      <div style="margin-top:12px"><button class="btn btn-sm" onclick="nav('plans')">View plan →</button></div>
+    </div>`;
+  }
+  html+=`<div class="grid-2" style="margin-bottom:14px">
+    <div class="stat-tile"><div class="stat-num" style="color:var(--ac)">${active}</div><div class="stat-label">Active players</div></div>
+    <div class="stat-tile"><div class="stat-num" style="color:var(--gr)">${sessions.length}</div><div class="stat-label">Sessions logged</div></div>
+  </div>`;
+  if(lastSess){
+    const pct=lastSess.present?Math.round(lastSess.present.length/active*100):0;
+    html+=`<div class="card">
+      <div class="card-title">Last session · ${lastSess.date}</div>
+      <div style="font-size:14px;font-weight:500;color:var(--t1);margin-bottom:6px">${lastSess.overview||lastSess.type}</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <span class="tag tag-gr">↳ ${lastSess.attendance||lastSess.present?.length||0} attended</span>
+        <span class="tag tag-${pct>=60?'gr':pct>=40?'am':'re'}">${pct}% squad</span>
+        ${lastSess.morale?`<span class="tag tag-ac">${lastSess.morale} morale</span>`:''}
+      </div>
+      ${(lastSess.highlights||[]).slice(0,2).map(h=>`<div style="font-size:12px;color:var(--gr);padding:3px 0">✓ ${h}</div>`).join('')}
+      ${(lastSess.concerns||[]).slice(0,2).map(c=>`<div style="font-size:12px;color:var(--am);padding:3px 0">⚠ ${c}</div>`).join('')}
+    </div>`;
+  }
+  html+=`<div class="quick-actions">
+    <div class="qa-btn" onclick="nav('tools')"><div class="qa-icon">💬</div><div class="qa-label">Log session with AI</div></div>
+    <div class="qa-btn" onclick="nav('squad')"><div class="qa-icon">👥</div><div class="qa-label">View squad</div></div>
+    <div class="qa-btn" onclick="nav('plans')"><div class="qa-icon">⚑</div><div class="qa-label">Training plans</div></div>
+    <div class="qa-btn" onclick="nav('attendance')"><div class="qa-icon">📊</div><div class="qa-label">Attendance</div></div>
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+// ── SQUAD ────────────────────────────────────────────────
+function renderSquad(){
+  const players=DB.players||[];
+  let html=`<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="btn btn-sm btn-primary" onclick="filterSquad('all')">All</button>
+    <button class="btn btn-sm" onclick="filterSquad('active')">Active</button>
+    <button class="btn btn-sm" onclick="filterSquad('ar')">All-rounders</button>
+    <button class="btn btn-sm" onclick="filterSquad('bat')">Batters</button>
+    <button class="btn btn-sm" onclick="filterSquad('bowl')">Bowlers</button>
+    <button class="btn btn-sm" onclick="filterSquad('wk')">Keepers</button>
+  </div><div class="grid-auto" id="squad-grid"></div>`;
+  document.getElementById('content').innerHTML=html;
+  filterSquad('all');
+}
+function filterSquad(f){
+  const players=DB.players||[];
+  let list=players;
+  if(f==='active') list=players.filter(p=>p.status!=='inactive');
+  else if(f!=='all') list=players.filter(p=>p.role===f&&p.status!=='inactive');
+  const attData=DB.attendance||[];
+  document.getElementById('squad-grid').innerHTML=list.map(p=>{
+    const inactive=p.status==='inactive';
+    const att=attData.find(a=>a.name===p.name);
+    const pct=att?Math.round(att.att.filter(x=>x==='y').length/att.att.length*100):0;
+    const sessCount=(p.sessions||p.history?.length||0);
+    return `<div class="player-card${inactive?' inactive':''}" onclick="openPlayer('${p.id}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+        <div class="pc-name">${p.name}${inactive?'<span style="font-size:10px;color:var(--t3);font-weight:400"> (left)</span>':''}</div>
+        <div style="display:flex;gap:4px;align-items:center">
+          ${p.bowl?.flag||p.field?.flag?'<span style="font-size:12px">⚠</span>':''}
+          <span class="role-badge role-${p.role}">${p.roleLabel}</span>
+        </div>
+      </div>
+      <div class="pc-meta">
+        <span class="pc-stat">${sessCount} sessions</span>
+        ${att?`<span class="pc-stat">${pct}% attendance</span>`:''}
+      </div>
+      ${p.bat?.notes?`<div class="pc-notes" style="border-left:2px solid var(--ac);padding-left:6px">🏏 ${p.bat.notes}</div>`:''}
+      ${p.bowl?.highlight?`<div class="pc-highlight">⭐ ${p.bowl.highlight}</div>`:''}
+      ${p.bowl?.flag?`<div class="pc-flag">⚠ ${p.bowl.flag}</div>`:''}
+      ${p.field?.highlight?`<div class="pc-highlight" style="color:var(--am)">🧤 ${p.field.highlight}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function openPlayer(id){
+  const p=(DB.players||[]).find(x=>x.id===id);
+  if(!p) return;
+  const attData=DB.attendance||[];
+  const att=attData.find(a=>a.name===p.name);
+  const y=att?att.att.filter(x=>x==='y').length:0;
+  const total=att?att.att.length:0;
+  const pct=total?Math.round(y/total*100):0;
+  const attColor=pct>=75?'var(--gr)':pct>=40?'var(--am)':'var(--re)';
+  const fit=(DB.fitness||[]).find(f=>f.name===p.name);
+
+  // Build full history from player.history array
+  const history=p.history||[];
+
+  document.getElementById('modal-player-name').textContent=p.name;
+  document.getElementById('modal-player-body').innerHTML=`
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
+      <span class="role-badge role-${p.role}">${p.roleLabel}</span>
+      ${att?`<span class="tag" style="color:${attColor}">${pct}% attendance (${y}/${total})</span>`:''}
+      ${fit?.best?`<span class="tag tag-gr">🏃 ${fit.best}</span>`:''}
+    </div>
+    ${p.status==='inactive'?`<div class="alert alert-warn" style="margin-bottom:14px">⚠ ${p.statusNote||'Left the squad'}</div>`:''}
+
+    <div style="margin-bottom:16px">
+      <div class="card-title">📅 Session history</div>
+      ${history.length?history.slice().reverse().map(h=>`
+        <div class="history-item">
+          <div class="history-date">${h.date}</div>
+          ${h.notes?`<div class="history-note">${h.notes}</div>`:''}
+          ${(h.highlights||[]).map(x=>`<div class="history-pos">✓ ${x}</div>`).join('')}
+          ${(h.concerns||[]).map(x=>`<div class="history-neg">⚠ ${x}</div>`).join('')}
+          ${!h.notes&&!h.highlights?.length&&!h.concerns?.length?`<div style="font-size:12px;color:var(--t3)">Attended — no specific notes</div>`:''}
+        </div>`).join('')
+      :`<div style="font-size:12px;color:var(--t3);padding:8px 0">No session notes logged yet. Use Coach AI to add notes after a session.</div>`}
+    </div>
+
+    <div class="hr"></div>
+    <div class="card-title" style="margin-top:14px">🏏 Batting</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.65;white-space:pre-wrap;margin-bottom:8px">${p.bat?.notes||'No notes yet'}</div>
+    ${(p.bat?.tags||[]).map(t=>`<span class="tag tag-ac" style="margin:2px">${t}</span>`).join('')}
+
+    <div class="hr"></div>
+    <div class="card-title" style="margin-top:14px">⚾ Bowling</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.65;white-space:pre-wrap;margin-bottom:8px">${p.bowl?.notes||'No notes yet'}</div>
+    ${(p.bowl?.tags||[]).map(t=>`<span class="tag tag-gr" style="margin:2px">${t}</span>`).join('')}
+    ${p.bowl?.highlight?`<div class="history-pos" style="margin-top:6px">⭐ ${p.bowl.highlight}</div>`:''}
+    ${p.bowl?.flag?`<div class="history-neg" style="margin-top:6px">⚠ ${p.bowl.flag}</div>`:''}
+
+    <div class="hr"></div>
+    <div class="card-title" style="margin-top:14px">🧤 Fielding</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.65;white-space:pre-wrap;margin-bottom:8px">${p.field?.notes||'No notes yet'}</div>
+    ${p.field?.highlight?`<div class="history-pos" style="margin-top:6px">${p.field.highlight}</div>`:''}
+    ${p.field?.flag?`<div class="history-neg" style="margin-top:6px">⚠ ${p.field.flag}</div>`:''}
+
+    ${fit?.best?`<div class="hr"></div>
+    <div class="card-title" style="margin-top:14px">💪 Fitness</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div class="stat-tile" style="flex:1;min-width:80px"><div class="stat-num" style="color:var(--gr)">${fit.best}</div><div class="stat-label">Best 2km</div></div>
+      <div class="stat-tile" style="flex:1;min-width:80px"><div class="stat-num" style="color:var(--ac)">${fit.runs}</div><div class="stat-label">Total runs</div></div>
+      <div class="stat-tile" style="flex:1;min-width:80px"><div class="stat-num" style="color:${fit.trend==='↑'?'var(--gr)':fit.trend==='↓'?'var(--re)':'var(--t2)'}">${fit.trend||'?'}</div><div class="stat-label">Trend</div></div>
+    </div>`:''}`
+  ;
+  document.getElementById('modal-player-footer').innerHTML=editMode?`<button class="btn btn-primary btn-sm">✏ Edit profile</button>`:'';
+  openModal('modal-player');
+}
+
+// ── SESSIONS ─────────────────────────────────────────────
+function renderSessions(){
+  const sessions=[...(DB.sessions||[])].reverse();
+  let html=`<div style="margin-bottom:8px;font-size:13px;color:var(--t3)">${sessions.length} sessions logged</div>`;
+  html+=sessions.map(s=>{
+    const total=(DB.players||[]).filter(p=>p.status!=='inactive').length;
+    const pct=s.present?Math.round(s.present.length/total*100):0;
+    return `<div class="session-card">
+      <div class="session-head" onclick="toggleSession('${s.id}')">
+        <div class="session-date">${s.date}</div>
+        <span class="session-type">${s.type}</span>
+        <div class="session-att">${s.attendance||s.present?.length||0} players · ${pct}%</div>
+        <span style="color:var(--t3);margin-left:8px;font-size:12px">▾</span>
+      </div>
+      <div class="session-body" id="sb-${s.id}">
+        ${s.overview?`<div style="font-size:13px;color:var(--t2);margin-bottom:10px;padding-top:4px">${s.overview}</div>`:''}
+        <div style="margin-bottom:8px">
+          ${(s.present||[]).map(n=>`<span class="player-chip present">${n}</span>`).join('')}
+          ${(s.partial||[]).map(n=>`<span class="player-chip partial">${n} (part)</span>`).join('')}
+        </div>
+        ${(s.highlights||[]).length?`<div style="margin-bottom:6px">${s.highlights.map(h=>`<div style="font-size:12px;color:var(--gr);padding:2px 0">✓ ${h}</div>`).join('')}</div>`:''}
+        ${(s.concerns||[]).length?`<div>${s.concerns.map(c=>`<div style="font-size:12px;color:var(--am);padding:2px 0">⚠ ${c}</div>`).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('content').innerHTML=html;
+}
+function toggleSession(id){
+  const el=document.getElementById('sb-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+// ── PLANS ────────────────────────────────────────────────
+function renderPlans(){
+  const plans=DB.trainingPlans||[];
+  if(!plans.length){ document.getElementById('content').innerHTML=`<div class="card"><p style="color:var(--t3)">No training plans yet. Use Coach AI to create one.</p></div>`; return; }
+
+  let tabs=`<div class="plan-tabs">`;
+  plans.forEach((p,i)=>{
+    tabs+=`<div class="plan-tab${i===0?' active':''} ${p.status==='done'?'done':''}" onclick="switchPlan(${i})" id="ptab-${i}">${p.date}${p.status==='done'?' ✓':''}</div>`;
+  });
+  tabs+=`</div><div id="plan-body"></div>`;
+  document.getElementById('content').innerHTML=tabs;
+  switchPlan(0);
+}
+function switchPlan(idx){
+  document.querySelectorAll('.plan-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  const p=(DB.trainingPlans||[])[idx];
+  if(!p) return;
+  const statusTag=p.status==='done'?'<span class="tag tag-gr">Completed</span>':p.status==='planned'?'<span class="tag tag-ac">Planned</span>':'<span class="tag tag-am">Next</span>';
+  let html=`<div class="card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px">
+      <div>
+        <div style="font-size:18px;font-weight:600;color:var(--t1);margin-bottom:4px">${p.title}</div>
+        <div style="font-size:13px;color:var(--t2)">${p.subtitle||p.date}</div>
+      </div>
+      ${statusTag}
+    </div>
+    ${p.notes?`<div style="font-size:12px;color:var(--t3);margin-top:10px;line-height:1.6;padding:8px 12px;background:var(--s2);border-radius:var(--radius-sm)">${p.notes}</div>`:''}
+  </div>
+  <div class="card">
+    <div class="card-title">Session rundown</div>
+    ${(p.rundown||[]).map(r=>`<div class="rundown-item">
+      <div class="rundown-dot rd-${r.type||'rest'}" style="margin-top:4px"></div>
+      <div style="flex:1">
+        <div style="display:flex;gap:8px;align-items:baseline;margin-bottom:3px">
+          <div class="rundown-time">${r.t}</div>
+          <div class="rundown-title">${r.title}</div>
+        </div>
+        <div class="rundown-desc">${r.desc||''}</div>
+      </div>
+    </div>`).join('')}
+  </div>
+  ${(p.playerNotes||[]).length?`<div class="card">
+    <div class="card-title">Player focus notes</div>
+    ${p.playerNotes.map(n=>`<div style="padding:6px 0;border-bottom:1px solid var(--b1)">
+      <span style="font-size:13px;font-weight:600;color:var(--t1)">${n.name}</span>
+      <span style="font-size:12px;color:var(--t2);margin-left:8px">${n.note}</span>
+    </div>`).join('')}
+  </div>`:''}`;
+  document.getElementById('plan-body').innerHTML=html;
+}
+
+// ── ATTENDANCE ───────────────────────────────────────────
+function renderAttendance(){
+  const data=DB.attendance||[];
+  const labels=SESSION_LABELS;
+  let html=`<div class="card">
+    <div class="card-title">Season attendance — ${labels.length} sessions</div>
+    <div style="display:flex;gap:4px;margin-bottom:10px;padding-left:108px">
+      ${labels.map(l=>`<div style="width:18px;font-size:8px;color:var(--t3);text-align:center;writing-mode:vertical-lr;transform:rotate(180deg)">${l}</div>`).join('')}
+    </div>
+    ${data.map(row=>{
+      const y=row.att.filter(x=>x==='y').length;
+      const h=row.att.filter(x=>x==='h').length;
+      const total=row.att.length;
+      const pct=Math.round((y+h*.5)/total*100);
+      const color=pct>=75?'var(--gr)':pct>=40?'var(--am)':'var(--re)';
+      return `<div class="att-row">
+        <div class="att-name">${row.name}</div>
+        <div class="att-dots">
+          ${row.att.map(a=>`<div class="att-dot att-${a}">${a==='y'?'✓':a==='h'?'½':''}</div>`).join('')}
+        </div>
+        <div class="att-pct" style="color:${color}">${pct}%</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+// ── FITNESS ──────────────────────────────────────────────
+function renderFitness(){
+  const data=[...(DB.fitness||[])].sort((a,b)=>(a.bestSec||9999)-(b.bestSec||9999));
+  const fastest=data[0]?.bestSec||600;
+  let html=`<div class="card">
+    <div class="card-title">2km leaderboard</div>
+    ${data.map((f,i)=>{
+      const barW=Math.round((fastest/f.bestSec)*100);
+      const color=i===0?'var(--go)':i<=2?'var(--gr)':'var(--ac)';
+      return `<div class="fitness-row">
+        <div class="fitness-rank">${i+1}</div>
+        <div class="fitness-name">${f.name}</div>
+        <div class="fitness-bar-wrap"><div class="fitness-bar" style="width:${barW}%;background:${color}"></div></div>
+        <div class="fitness-time" style="color:${color}">${f.best||'—'}</div>
+        <div class="fitness-trend">${f.trend||'?'}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+}
+
+// ── VALUES ───────────────────────────────────────────────
+function renderValues(){
+  let html=VALUES_DATA.map(v=>`
+    <div class="value-card">
+      <div class="value-header" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('.vc-arr').style.transform=this.nextElementSibling.classList.contains('open')?'rotate(90deg)':''">
+        <span class="value-icon">${v.icon}</span>
+        <span class="value-title">${v.title}</span>
+        <span class="vc-arr" style="margin-left:auto;color:var(--t3);transition:transform .2s">▶</span>
+      </div>
+      <div style="display:none">
+        ${v.items.map(i=>`<div class="value-item">${i}</div>`).join('')}
+      </div>
+    </div>`).join('');
+  document.getElementById('content').innerHTML=html;
+}
+
+// ── COACH AI TOOLS ───────────────────────────────────────
+function renderTools(){
+  const hasKey=!!anthropicKey;
+  let html=`<div id="tools-layout">
+    <div class="chat-panel">
+      <div style="padding:12px 14px;border-bottom:1px solid var(--b1);flex-shrink:0">
+        <div style="font-size:14px;font-weight:600;color:var(--t1);margin-bottom:2px">💬 Coach AI</div>
+        <div style="font-size:11px;color:var(--t3)">${hasKey?'Connected — type anything about your squad or session':'Add your Anthropic API key in Settings to enable AI coaching'}</div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        ${chatHistory.length===0?`<div class="chat-msg system">Session started. ${hasKey?'I know your full squad, all sessions and every player\'s history. Just talk.':'Add an API key in Settings to get started.'}</div>`:''}
+        ${chatHistory.map(m=>`<div class="chat-msg ${m.role}">${m.content}</div>`).join('')}
+      </div>
+      <div class="chat-input-area">
+        <div class="chat-actions">
+          <div class="chat-chip" onclick="quickPrompt('Log today\\'s session notes')">📋 Log session</div>
+          <div class="chat-chip" onclick="quickPrompt('Update player profiles from the last session')">👤 Update players</div>
+          <div class="chat-chip" onclick="quickPrompt('Build a training plan for next session')">⚑ Build plan</div>
+          <div class="chat-chip" onclick="quickPrompt('Attendance and fitness summary')">📊 Summary</div>
+        </div>
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chat-input" placeholder="Type session notes, ask about players, request a training plan..." onkeydown="chatKeydown(event)" rows="2"></textarea>
+          <button class="btn btn-primary" onclick="sendChat()" id="chat-send" style="align-self:flex-end;padding:10px 16px"${hasKey?'':' disabled title="Add API key in Settings"'}>↑</button>
+        </div>
+      </div>
+    </div>
+    <div class="preview-panel">
+      <div class="preview-header">
+        <div style="font-size:13px;font-weight:600;color:var(--t1)">App preview</div>
+        <div style="display:flex;gap:6px" id="preview-actions"></div>
+      </div>
+      <div class="preview-body" id="preview-body">
+        <div class="preview-empty">
+          <div class="icon">👁</div>
+          <div style="font-size:13px;font-weight:500;color:var(--t2)">Changes preview</div>
+          <div style="font-size:12px;color:var(--t3)">When Claude suggests updates, they'll appear here for review before going live</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('content').innerHTML=html;
+  scrollChat();
+}
+
+function chatKeydown(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendChat(); }
+}
+function quickPrompt(text){
+  const inp=document.getElementById('chat-input');
+  if(inp){ inp.value=text; inp.focus(); }
+}
+function scrollChat(){
+  const el=document.getElementById('chat-messages');
+  if(el) el.scrollTop=el.scrollHeight;
+}
+function addChatMsg(role,content){
+  chatHistory.push({role,content});
+  const el=document.getElementById('chat-messages');
+  if(!el) return;
+  const div=document.createElement('div');
+  div.className=`chat-msg ${role}`;
+  div.textContent=content;
+  el.appendChild(div);
+  scrollChat();
+}
+
+async function sendChat(){
+  if(!anthropicKey){ addChatMsg('error','Add your Anthropic API key in Settings first.'); return; }
+  const inp=document.getElementById('chat-input');
+  const text=inp?.value?.trim();
+  if(!text) return;
+  inp.value='';
+  addChatMsg('user',text);
+  const thinking=document.createElement('div');
+  thinking.className='chat-msg thinking';
+  thinking.textContent='Thinking…';
+  document.getElementById('chat-messages').appendChild(thinking);
+  scrollChat();
+
+  // Build system prompt with full DB context
+  const systemPrompt=buildSystemPrompt();
+  // Build messages array
+  const messages=[...chatHistory.slice(0,-1).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content})),{role:'user',content:text}];
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':anthropicKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-opus-4-5',max_tokens:4000,system:systemPrompt,messages})
+    });
+    thinking.remove();
+    if(!resp.ok){ const err=await resp.json(); addChatMsg('error',`API error: ${err.error?.message||resp.status}`); return; }
+    const data=await resp.json();
+    const reply=data.content?.[0]?.text||'No response';
+    addChatMsg('claude',reply);
+    // Try to extract and show patch
+    extractAndPreviewPatch(reply);
+  }catch(e){
+    thinking.remove();
+    addChatMsg('error',`Connection error: ${e.message}`);
+  }
+}
+
+function buildSystemPrompt(){
+  const players=(DB.players||[]).map(p=>`${p.name} (${p.roleLabel}${p.status==='inactive'?' — left squad':''}): bat="${p.bat?.notes?.substring(0,150)||'no notes'}", bowl="${p.bowl?.notes?.substring(0,150)||'no notes'}", field="${p.field?.notes?.substring(0,100)||'no notes'}", history=${p.history?.length||0} sessions logged`).join('\n');
+  const sessions=(DB.sessions||[]).map(s=>`${s.date}: ${s.attendance} players, highlights: ${(s.highlights||[]).join(', ')||'none'}, concerns: ${(s.concerns||[]).join(', ')||'none'}`).join('\n');
+  const att=(DB.attendance||[]).map(a=>{const y=a.att.filter(x=>x==='y').length;return `${a.name}: ${y}/${a.att.length} sessions`;}).join(', ');
+
+  return `You are the coaching assistant for the Estonia Women's National Cricket Team (WNT), embedded directly in the coaching hub app. You have full access to the squad data, session history, and coaching notes below.
+
+SQUAD (${(DB.players||[]).filter(p=>p.status!=='inactive').length} active players):
+${players}
+
+SESSION HISTORY (${(DB.sessions||[]).length} sessions):
+${sessions}
+
+ATTENDANCE OVERVIEW:
+${att}
+
+CURRENT TRAINING PLANS:
+${(DB.trainingPlans||[]).map(p=>`${p.date} — ${p.title} (${p.status})`).join('\n')}
+
+YOUR ROLE:
+- You are Ben's coaching partner. You know every player, every session, every note.
+- When asked to log a session, update player profiles, or build a training plan, produce a JSON patch block.
+- JSON patches must be wrapped in triple backticks with the label "PATCH:" before them.
+- Always provide full, detailed coaching notes — never summaries. The standard is professional coaching language with specific technical observations.
+- When updating player history, each entry must include the date, full notes (not a summary), and highlights/concerns arrays.
+- When asked questions (attendance trends, player comparisons, planning advice), answer conversationally first, then offer to update the app.
+- You understand cricket coaching terminology and the specific needs of each player.
+
+JSON PATCH FORMAT (when updating the app):
+\`\`\`json
+PATCH:
+{
+  "summary": "one sentence",
+  "playerUpdates": [{"name":"PlayerName","fieldsToUpdate":{"history":[{"date":"DD Mon YYYY","type":"session","notes":"FULL detailed notes here","highlights":["name — specific positive"],"concerns":["name — specific concern"]}],"bat":{"notes":"full notes","tags":[]},"bowl":{"notes":"full notes","tags":[]},"field":{"notes":"full notes"}}}],
+  "newSession": null,
+  "newTrainingPlans": [],
+  "newEvents": [],
+  "fitnessUpdates": []
+}
+\`\`\`
+
+COACHING STANDARDS:
+- Session 1 theme: mental preparation (12 May)
+- Session 2 theme: soft hands, hard work (17 May)
+- Current focus: move your feet, make runs (24 May)
+- Positive reinforcement is a cultural expectation — everyone builds each other up
+- Selection prioritises players who show up and play regularly`;
+}
+
+function extractAndPreviewPatch(text){
+  const match=text.match(/```json\s*PATCH:\s*([\s\S]*?)```/);
+  if(!match) return;
+  try{
+    const raw=match[1].trim();
+    const patch=JSON.parse(raw);
+    pendingPatch=patch;
+    showPreview(patch);
+  }catch(e){
+    console.warn('Could not parse patch',e);
+  }
+}
+
+function showPreview(patch){
+  const body=document.getElementById('preview-body');
+  const actions=document.getElementById('preview-actions');
+  if(!body) return;
+  let html='';
+  if(patch.newSession){
+    const s=patch.newSession;
+    html+=`<div class="diff-section"><h4>📅 New session</h4>
+      <div class="diff-item add">
+        <div class="diff-item-name">${s.date} — ${s.type}</div>
+        <div class="diff-item-detail">${s.attendance||s.present?.length||0} players · ${s.overview||''}</div>
+      </div></div>`;
+  }
+  if(patch.playerUpdates?.length){
+    html+=`<div class="diff-section"><h4>👥 Player updates (${patch.playerUpdates.length})</h4>`;
+    patch.playerUpdates.forEach(pu=>{
+      const f=pu.fieldsToUpdate||{};
+      const changes=[];
+      if(f.history?.length) changes.push(`${f.history.length} session note${f.history.length>1?'s':''} added`);
+      if(f.bat?.notes) changes.push('Batting notes');
+      if(f.bowl?.notes) changes.push('Bowling notes');
+      if(f.field?.notes) changes.push('Fielding notes');
+      html+=`<div class="diff-item update">
+        <div class="diff-item-name">${pu.name}</div>
+        <div class="diff-item-detail">${changes.join(' · ')||'Updated'}</div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  if(patch.newTrainingPlans?.length){
+    html+=`<div class="diff-section"><h4>⚑ Training plans</h4>`;
+    patch.newTrainingPlans.forEach(p=>{ html+=`<div class="diff-item add"><div class="diff-item-name">${p.title}</div><div class="diff-item-detail">${p.date}</div></div>`; });
+    html+=`</div>`;
+  }
+  if(patch.newEvents?.length){
+    html+=`<div class="diff-section"><h4>🗓 Calendar events</h4>`;
+    patch.newEvents.forEach(e=>{ html+=`<div class="diff-item add"><div class="diff-item-name">${e.day} ${e.month} — ${e.title}</div></div>`; });
+    html+=`</div>`;
+  }
+  if(!html) html=`<div style="color:var(--t3);font-size:13px;padding:8px 0">No data changes in this response.</div>`;
+  body.innerHTML=html;
+  if(actions) actions.innerHTML=`<button class="btn btn-green btn-sm" onclick="applyPatch()">☁ Push live</button><button class="btn btn-sm" onclick="pendingPatch=null;document.getElementById('preview-body').innerHTML='<div class=preview-empty><div class=icon>👁</div></div>';document.getElementById('preview-actions').innerHTML=''">✕</button>`;
+}
+
+async function applyPatch(){
+  if(!pendingPatch) return;
+  const u=JSON.parse(JSON.stringify(DB));
+  const p=pendingPatch;
+
+  // Apply session
+  if(p.newSession){ if(!u.sessions) u.sessions=[]; u.sessions.push({...p.newSession,id:'s'+Date.now()}); }
+
+  // Apply player updates — field-level merge, history APPENDS
+  (p.playerUpdates||[]).forEach(pu=>{
+    const idx=(u.players||[]).findIndex(pl=>pl.name.toLowerCase().replace(/[^a-z]/g,'').includes(pu.name.toLowerCase().replace(/[^a-z]/g,'')));
+    if(idx<0) return;
+    const f=pu.fieldsToUpdate||{};
+    if(f.history?.length){
+      if(!u.players[idx].history) u.players[idx].history=[];
+      f.history.forEach(h=>{ if(!u.players[idx].history.find(x=>x.date===h.date)) u.players[idx].history.push(h); });
+    }
+    if(f.bat?.notes!==undefined) u.players[idx].bat={...(u.players[idx].bat||{}),notes:f.bat.notes,tags:f.bat.tags||u.players[idx].bat?.tags||[]};
+    if(f.bowl?.notes!==undefined) u.players[idx].bowl={...(u.players[idx].bowl||{}),notes:f.bowl.notes,tags:f.bowl.tags||u.players[idx].bowl?.tags||[]};
+    if(f.field?.notes!==undefined) u.players[idx].field={...(u.players[idx].field||{}),notes:f.field.notes};
+  });
+
+  // Plans
+  if(p.replaceAllPlans){ u.trainingPlans=p.newTrainingPlans||[]; }
+  else{ (p.newTrainingPlans||[]).forEach(pl=>{ if(!u.trainingPlans) u.trainingPlans=[]; const i=u.trainingPlans.findIndex(x=>x.id===pl.id); i>=0?u.trainingPlans[i]=pl:u.trainingPlans.push(pl); }); }
+
+  // Events
+  (p.newEvents||[]).forEach(ev=>{ if(!u.events) u.events=[]; u.events.push({id:'e'+Date.now()+Math.random()|0,...ev}); });
+
+  // Fitness
+  (p.fitnessUpdates||[]).forEach(fu=>{ if(!u.fitness) u.fitness=[]; const i=u.fitness.findIndex(x=>x.name===fu.name); i>=0?u.fitness[i]={...u.fitness[i],...fu}:u.fitness.push(fu); });
+
+  // Attendance auto-update
+  if(p.newSession){ const s=p.newSession; (s.present||[]).forEach(n=>{ const ai=(u.attendance||[]).findIndex(a=>a.name===n); if(ai>=0) u.attendance[ai].att.push('y'); }); (s.partial||[]).forEach(n=>{ const ai=(u.attendance||[]).findIndex(a=>a.name===n); if(ai>=0) u.attendance[ai].att.push('h'); }); (s.absent||[]).forEach(n=>{ const ai=(u.attendance||[]).findIndex(a=>a.name===n); if(ai>=0) u.attendance[ai].att.push('n'); }); }
+
+  u.meta={...u.meta,lastUpdated:new Date().toISOString()};
+  setSyncStatus('syncing');
+  const ok=await writeBin(u);
+  if(ok){
+    DB=u;
+    localStorage.setItem('wnt_v6_cache',JSON.stringify(DB));
+    pendingPatch=null;
+    addChatMsg('system','✓ App updated and live for all staff');
+    document.getElementById('preview-body').innerHTML='<div class="preview-empty"><div class="icon">✓</div><div style="color:var(--gr);font-size:13px;font-weight:500">Changes applied</div></div>';
+    document.getElementById('preview-actions').innerHTML='';
+    setSyncStatus('ok');
+    renderPage();
+  } else {
+    addChatMsg('error','Push failed — check connection and try again');
+    setSyncStatus('err');
+  }
+}
+
+// ── SETTINGS ─────────────────────────────────────────────
+function renderSettings(){
+  document.getElementById('content').innerHTML=`<div class="card">
+    <div class="card-title">Coach AI</div>
+    <div class="settings-row">
+      <div><div class="settings-label">Anthropic API key</div><div class="settings-desc">Powers the built-in Claude coach. Get one free at console.anthropic.com (~$5 credit = ~500 session updates)</div></div>
+    </div>
+    <div class="field" style="margin-top:10px">
+      <input type="password" id="api-key-input" value="${anthropicKey}" placeholder="sk-ant-...">
+    </div>
+    <button class="btn btn-primary" onclick="saveApiKey()">Save key</button>
+    ${anthropicKey?'<span style="color:var(--gr);font-size:12px;margin-left:10px">✓ Key saved</span>':''}
+    <hr class="hr">
+    <div class="settings-row">
+      <div><div class="settings-label">Theme</div><div class="settings-desc">Toggle light or dark mode</div></div>
+      <div class="toggle${isLight?' on':''}" onclick="toggleTheme();this.classList.toggle('on')"></div>
+    </div>
+    <hr class="hr">
+    <div class="card-title" style="margin-top:4px">Data</div>
+    <div class="settings-row">
+      <div><div class="settings-label">JSONBin connection</div><div class="settings-desc">BIN: ${BIN_ID}</div></div>
+      <button class="btn btn-sm" onclick="forceSync()">↻ Sync now</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Clear local cache</div><div class="settings-desc">Forces fresh load from JSONBin</div></div>
+      <button class="btn btn-sm" onclick="localStorage.removeItem('wnt_v6_cache');location.reload()">Clear</button>
+    </div>
+  </div>`;
+}
+function saveApiKey(){
+  anthropicKey=document.getElementById('api-key-input')?.value?.trim()||'';
+  localStorage.setItem('anthropic_key',anthropicKey);
+  renderSettings();
+}
+
+// ── MODALS ───────────────────────────────────────────────
+function openModal(id){ document.getElementById(id)?.classList.add('open'); }
+function closeModal(id){ document.getElementById(id)?.classList.remove('open'); }
+document.addEventListener('click',e=>{ if(e.target.classList.contains('modal-overlay')) e.target.classList.remove('open'); });
+
+// ── BOOT ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
