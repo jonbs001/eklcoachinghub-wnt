@@ -600,8 +600,53 @@ async function init(){
   else{ DB=JSON.parse(JSON.stringify(SEED)); renderPage(); }
   setSyncStatus('syncing');
   const fresh = await readBin();
-  if(fresh){ DB=fresh; localStorage.setItem('wnt_v6_cache',JSON.stringify(DB)); renderPage(); setSyncStatus('ok'); }
-  else setSyncStatus('err');
+  if(fresh){
+    // Detect old v5 format (no history arrays) and migrate
+    const isOldFormat = fresh.players && !fresh.players[0]?.history;
+    if(isOldFormat){
+      // Start from SEED (which has history) and overlay any JSONBin notes
+      const migrated = JSON.parse(JSON.stringify(SEED));
+      if(fresh.players){
+        fresh.players.forEach(fp=>{
+          const mi = migrated.players.findIndex(mp=>mp.name===fp.name);
+          if(mi>=0){
+            // Take JSONBin notes if they're more detailed than SEED
+            if(fp.bat?.notes && fp.bat.notes.length > (migrated.players[mi].bat?.notes?.length||0)) migrated.players[mi].bat = fp.bat;
+            if(fp.bowl?.notes && fp.bowl.notes.length > (migrated.players[mi].bowl?.notes?.length||0)) migrated.players[mi].bowl = fp.bowl;
+            if(fp.field?.notes && fp.field.notes.length > (migrated.players[mi].field?.notes?.length||0)) migrated.players[mi].field = fp.field;
+            if(fp.fitness?.best) migrated.players[mi].fitness = fp.fitness;
+          }
+        });
+      }
+      // Keep sessions, trainingPlans, events from JSONBin if they exist
+      if(fresh.sessions?.length) migrated.sessions = fresh.sessions;
+      if(fresh.trainingPlans?.length) migrated.trainingPlans = fresh.trainingPlans;
+      if(fresh.events?.length) migrated.events = fresh.events;
+      if(fresh.attendance?.length) migrated.attendance = fresh.attendance;
+      if(fresh.fitness?.length) migrated.fitness = fresh.fitness;
+      DB = migrated;
+      localStorage.setItem('wnt_v6_cache',JSON.stringify(DB));
+      renderPage();
+      setSyncStatus('syncing');
+      await writeBin(DB);
+      setSyncStatus('ok');
+    } else {
+      // Normal load — merge SEED history into any players missing it
+      if(fresh.players){
+        fresh.players.forEach(fp=>{
+          const sp = SEED.players.find(s=>s.name===fp.name);
+          if(sp && (!fp.history||fp.history.length===0) && sp.history?.length>0) fp.history=sp.history;
+          if(sp && !fp.bat?.notes && sp.bat?.notes) fp.bat=sp.bat;
+          if(sp && !fp.bowl?.notes && sp.bowl?.notes) fp.bowl=sp.bowl;
+          if(sp && !fp.field?.notes && sp.field?.notes) fp.field=sp.field;
+        });
+      }
+      DB=fresh;
+      localStorage.setItem('wnt_v6_cache',JSON.stringify(DB));
+      renderPage();
+      setSyncStatus('ok');
+    }
+  } else setSyncStatus('err');
 }
 
 // ── JSONBIN ──────────────────────────────────────────────
